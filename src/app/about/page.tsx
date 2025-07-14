@@ -12,7 +12,7 @@ export default function AboutPage() {
           <strong>FactCheck AI</strong> is an experimental project designed to help users quickly verify the accuracy of claims using AI and real-time web search.
         </p>
         <blockquote className="border-l-4 border-blue-400 pl-4 italic text-gray-700 bg-blue-50/50 rounded mb-4 p-4">
-          FactCheck AI was created to give users a fast, accessible way to verify claims using large language models and real-time web search. The tool combines OpenAI’s GPT models with retrieval-augmented generation (RAG), powered by LangChain (via LangServe) and vector search using pgvector on Neon.
+          FactCheck AI was created to give users a fast, accessible way to verify claims using large language models and real-time web search. The tool combines OpenAI&apos;s GPT models with retrieval-augmented generation (RAG), powered by LangChain (via LangServe) and vector search using pgvector on Neon.
           <br /><br />
           On the frontend, it's built with Next.js and Tailwind CSS for a clean, responsive experience. This project has been a hands-on opportunity to learn more about AI, vector databases, and building full-stack applications that bridge NLP and real-world utility.
         </blockquote>
