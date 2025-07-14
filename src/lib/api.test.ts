@@ -18,7 +18,7 @@ function setupAxiosMock() {
 import type { FactCheckResponse } from './api';
 
 describe('API Utility', () => {
-  const mockFactCheckResponse: any = {
+  const mockFactCheckResponse: FactCheckResponse = {
     verdict: 'True',
     confidence: 85,
     reasoning: 'This claim is true based on reliable sources.',
@@ -60,7 +60,7 @@ describe('API Utility', () => {
       mockApiClient.post.mockResolvedValue({ data: mockFactCheckResponse });
       const axios = await import('axios');
       await factCheck('Test claim');
-      expect((axios as any).create).toHaveBeenCalledWith({
+      expect((axios as unknown as { create: jest.Mock }).create).toHaveBeenCalledWith({
         baseURL: 'http://localhost:8000',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ describe('API Utility', () => {
       mockApiClient.post.mockResolvedValue({ data: mockFactCheckResponse });
       const axios = await import('axios');
       await factCheck('Test claim');
-      expect((axios as any).create).toHaveBeenCalledWith({
+      expect((axios as unknown as { create: jest.Mock }).create).toHaveBeenCalledWith({
         baseURL: 'https://custom-api.com',
         headers: {
           'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ describe('API Utility', () => {
 
   describe('Type definitions', () => {
     it('should have correct FactCheckResponse structure', () => {
-      const response: any = {
+      const response: FactCheckResponse = {
         verdict: 'False',
         confidence: 95,
         reasoning: 'This claim is false.',
@@ -155,7 +155,7 @@ describe('API Utility', () => {
     });
 
     it('should accept Unclear verdict', () => {
-      const response: any = {
+      const response: FactCheckResponse = {
         verdict: 'Unclear',
         confidence: 0,
         reasoning: 'Cannot determine.',

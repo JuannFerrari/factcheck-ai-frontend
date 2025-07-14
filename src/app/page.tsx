@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import ResultBox from '@/components/ResultBox';
@@ -71,7 +71,7 @@ export default function HomePage() {
   const handleRetry = () => {
     if (error?.retryable) {
       setError(null);
-      handleSubmit(new Event('submit') as any);
+      handleSubmit(new Event('submit') as unknown as React.FormEvent<HTMLFormElement>);
     }
   };
 
