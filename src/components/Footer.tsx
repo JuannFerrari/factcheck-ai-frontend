@@ -13,7 +13,7 @@ export default function Footer() {
             About
           </Link>
           <a
-            href="https://github.com/your-username/your-repo"
+            href="https://github.com/JuannFerrari/factcheck-ai-frontend"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 hover:underline"
