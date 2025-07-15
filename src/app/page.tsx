@@ -7,7 +7,7 @@ import ResultBox from '@/components/ResultBox';
 import { ResultProps } from '@/components/ResultBox.types';
 import { factCheck } from '@/lib/api';
 import { ErrorDisplay, getErrorInfo, getValidationError, ErrorInfo } from '@/components/ErrorDisplay';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Search, Brain, Zap } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'factcheck_results';
 const PAGE_SIZE = 5;
@@ -55,6 +55,7 @@ export default function HomePage() {
         verdict: response.verdict,
         confidence: response.confidence,
         explanation: response.reasoning,
+        tldr: response.tldr,
         sources: response.sources,
         claim: response.claim,
       };
@@ -80,47 +81,141 @@ export default function HomePage() {
   };
 
   return (
-    <main className="max-w-xl mx-auto mt-5 p-4 space-y-6">
-      <h1 className="text-3xl font-semibold">🧠 FactCheck AI</h1>
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Header Section */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
+            <Brain className="w-8 h-8 text-blue-600" />
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900 mb-4">
+            FactCheck AI
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Verify factual claims using AI-powered analysis and real-time web search
+          </p>
+        </div>
 
-      <p className="text-muted-foreground text-sm mb-2">
-        Enter a factual claim (e.g., “The Eiffel Tower is taller than the Statue of Liberty”) and click <span className="font-medium">Check Claim</span>. The AI will analyze your statement, search for supporting evidence, and provide a verdict with sources.
-      </p>
+        {/* Main Content Grid */}
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-5">
+          {/* Left Column - Input Form */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-6 shadow-sm lg:sticky lg:top-8">
+              <h2 className="text-lg lg:text-xl font-semibold text-gray-900 mb-4">Check a Claim</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <Textarea
-          placeholder="Paste a claim to check..."
-          value={claim}
-          onChange={(e) => setClaim(e.target.value)}
-          className="h-32"
-          required
-          disabled={loading}
-        />
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? 'Checking...' : 'Check Claim'}
-        </Button>
-      </form>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="claim" className="block text-sm font-medium text-gray-700 mb-2">
+                    Enter your claim
+                  </label>
+                  <Textarea
+                    id="claim"
+                    placeholder="e.g., 'The Eiffel Tower is taller than the Statue of Liberty'"
+                    value={claim}
+                    onChange={(e) => setClaim(e.target.value)}
+                    className="h-32 resize-none"
+                    required
+                    disabled={loading}
+                  />
+                </div>
 
-      <div className="flex items-start gap-2 bg-yellow-100 text-yellow-800 rounded p-2 mb-1 text-xs italic">
-        <AlertTriangle className="w-4 h-4 mt-0.5 text-yellow-500" />
-        <div>
-          <span className="font-semibold">Disclaimer:</span> This is an experimental project. Always double-check the sources and do not rely solely on these results for important decisions.
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={loading}
+                  size="lg"
+                >
+                  {loading ? (
+                    <>
+                      <Zap className="w-4 h-4 mr-2 animate-pulse" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="w-4 h-4 mr-2" />
+                      Check Claim
+                    </>
+                  )}
+                </Button>
+              </form>
+
+              {/* Disclaimer */}
+              <div className="mt-4 lg:mt-6 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-amber-900 mb-1 text-xs">Important Disclaimer</h3>
+                    <p className="text-amber-800 text-xs leading-relaxed">
+                      This is an experimental AI-powered tool for educational and research purposes only.
+                      Results are provided &quot;as is&quot; without any warranties. Users should independently verify
+                      all information through authoritative sources and consult qualified professionals for
+                      important decisions. <strong>Use at your own risk.</strong>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Results */}
+          <div className="lg:col-span-3">
+            <div className="space-y-4 lg:space-y-6">
+              {/* Error Display */}
+              {error && <ErrorDisplay error={error} onRetry={handleRetry} />}
+
+              {/* Loading State */}
+              {loading && (
+                <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-6 shadow-sm">
+                  <ResultBox
+                    loading={true}
+                    verdict=""
+                    confidence={0}
+                    explanation=""
+                    claim={claim}
+                    loadingMessage={LOADING_MESSAGE}
+                  />
+                </div>
+              )}
+
+              {/* Results */}
+              <div className="space-y-4 lg:space-y-6">
+                {results.slice(0, visibleCount).map((res, idx) => (
+                  <div key={idx + (res.claim || '')} className="bg-white rounded-lg border border-gray-200 shadow-sm">
+                    <ResultBox {...res} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Load More Button */}
+              {visibleCount < results.length && (
+                <div className="text-center pt-2">
+                  <Button
+                    onClick={handleLoadMore}
+                    variant="outline"
+                    size="lg"
+                    className="px-8"
+                  >
+                    Load More Results
+                  </Button>
+                </div>
+              )}
+
+              {/* Empty State */}
+              {!loading && results.length === 0 && (
+                <div className="bg-white rounded-lg border border-gray-200 p-6 lg:p-8 text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-3">
+                    <Search className="w-6 h-6 text-gray-400" />
+                  </div>
+                  <h3 className="text-base font-medium text-gray-900 mb-1">No results yet</h3>
+                  <p className="text-gray-600 text-sm">
+                    Enter a claim above to start fact-checking
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-
-      {error && <ErrorDisplay error={error} onRetry={handleRetry} />}
-
-      <div className="max-h-[600px] overflow-y-auto space-y-6 mt-4">
-        {loading && <ResultBox loading={true} verdict="" confidence={0} explanation="" claim={claim} loadingMessage={LOADING_MESSAGE} />}
-        {results.slice(0, visibleCount).map((res, idx) => (
-          <ResultBox key={idx + (res.claim || '')} {...res} />
-        ))}
-      </div>
-      {visibleCount < results.length && (
-        <Button onClick={handleLoadMore} className="w-full mt-2" variant="outline">
-          Load more
-        </Button>
-      )}
     </main>
   );
 }

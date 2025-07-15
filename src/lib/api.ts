@@ -43,9 +43,10 @@ export interface Source {
 }
 
 export interface FactCheckResponse {
-  verdict: 'True' | 'False' | 'Unclear';
+  verdict: 'True' | 'False' | 'Unclear' | 'Disputed' | 'Rejected';
   confidence: number;
   reasoning: string;
+  tldr?: string;
   sources: Source[];
   claim: string;
 }

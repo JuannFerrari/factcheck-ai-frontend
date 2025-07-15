@@ -22,4 +22,18 @@ describe('VerdictBadge', () => {
     expect(badge).toHaveTextContent('Unclear');
     expect(badge.className).toMatch(/gray/);
   });
+
+  it('renders Disputed verdict with correct label and color', () => {
+    render(<VerdictBadge verdict="Disputed" />);
+    const badge = screen.getByLabelText(/verdict/i);
+    expect(badge).toHaveTextContent('Disputed');
+    expect(badge.className).toMatch(/yellow/);
+  });
+
+  it('renders Rejected verdict with correct label and color', () => {
+    render(<VerdictBadge verdict="Rejected" />);
+    const badge = screen.getByLabelText(/verdict/i);
+    expect(badge).toHaveTextContent('Rejected');
+    expect(badge.className).toMatch(/red/);
+  });
 }); 

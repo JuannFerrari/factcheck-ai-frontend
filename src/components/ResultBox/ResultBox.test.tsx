@@ -65,4 +65,16 @@ describe('ResultBox', () => {
     expect(screen.queryByText(/explanation/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/verdict/i)).not.toBeInTheDocument();
   });
+
+  it('renders the Disputed verdict badge', () => {
+    render(<ResultBox {...baseProps} verdict="Disputed" />);
+    expect(screen.getByLabelText(/verdict/i)).toHaveTextContent('Disputed');
+    expect(screen.getByLabelText(/verdict/i).className).toMatch(/yellow/);
+  });
+
+  it('renders the Rejected verdict badge', () => {
+    render(<ResultBox {...baseProps} verdict="Rejected" />);
+    expect(screen.getByLabelText(/verdict/i)).toHaveTextContent('Rejected');
+    expect(screen.getByLabelText(/verdict/i).className).toMatch(/red/);
+  });
 }); 

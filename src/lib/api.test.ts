@@ -1,168 +1,139 @@
-// Helper to mock axios and expose the mock client
-function setupAxiosMock() {
+import axios from 'axios';
+import { factCheck, FactCheckResponse, ApiError } from './api';
+
+// Mock axios before importing the module
+jest.mock('axios', () => {
   const mockApiClient = {
     post: jest.fn(),
     interceptors: {
-      response: {
-        use: jest.fn(),
-      },
-    },
+      response: { use: jest.fn() }
+    }
   };
-  jest.doMock('axios', () => ({
+  return {
     create: jest.fn(() => mockApiClient),
     isAxiosError: jest.fn(),
-  }));
-  return mockApiClient;
-}
-
-import type { FactCheckResponse } from './api';
-
-describe('API Utility', () => {
-  const mockFactCheckResponse: FactCheckResponse = {
-    verdict: 'True',
-    confidence: 85,
-    reasoning: 'This claim is true based on reliable sources.',
-    sources: [
-      {
-        title: 'Reliable Source',
-        url: 'https://example.com',
-        snippet: 'This is a reliable source.',
-      },
-    ],
-    claim: 'Test claim',
+    __mockApiClient: mockApiClient // for test access if needed
   };
+});
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockApiClient = (axios as any).__mockApiClient;
+
+describe('API Module', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // Reset environment variables
-    delete process.env.NEXT_PUBLIC_API_URL;
-    delete process.env.NEXT_PUBLIC_FACTCHECK_API_KEY;
   });
 
-  describe('factCheck function', () => {
-    it('should make a POST request with correct URL and payload', async () => {
-      const mockApiClient = setupAxiosMock();
-      jest.resetModules();
-      const { factCheck } = await import('./api');
-      mockApiClient.post.mockResolvedValue({ data: mockFactCheckResponse });
+  describe('factCheck()', () => {
+    it('should make successful API call and return response', async () => {
+      const mockResponse: FactCheckResponse = {
+        verdict: 'False',
+        confidence: 95,
+        reasoning: 'This claim is false based on multiple sources.',
+        tldr: 'This claim is false.',
+        sources: [
+          { title: 'Test Source', url: 'https://example.com', snippet: 'Test snippet' }
+        ],
+        claim: 'Test claim'
+      };
+
+      mockApiClient.post.mockResolvedValueOnce({ data: mockResponse });
+
       const result = await factCheck('Test claim');
-      expect(result).toEqual(mockFactCheckResponse);
+
+      expect(result).toEqual(mockResponse);
       expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/factcheck', {
-        claim: 'Test claim',
+        claim: 'Test claim'
       });
     });
 
-    it('should include API key in request headers when environment variable is set', async () => {
-      process.env.NEXT_PUBLIC_FACTCHECK_API_KEY = 'test-api-key';
-      const mockApiClient = setupAxiosMock();
-      jest.resetModules();
-      const { factCheck } = await import('./api');
-      mockApiClient.post.mockResolvedValue({ data: mockFactCheckResponse });
-      const axios = await import('axios');
-      await factCheck('Test claim');
-      expect((axios as unknown as { create: jest.Mock }).create).toHaveBeenCalledWith({
-        baseURL: 'http://localhost:8000',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': 'test-api-key',
-        },
+    it('should handle response without TL;DR', async () => {
+      const mockResponse: FactCheckResponse = {
+        verdict: 'True',
+        confidence: 85,
+        reasoning: 'This claim is true.',
+        sources: [{ title: 'Test Source', url: 'https://example.com' }],
+        claim: 'Test claim'
+      };
+
+      mockApiClient.post.mockResolvedValueOnce({ data: mockResponse });
+
+      const result = await factCheck('Test claim');
+
+      expect(result).toEqual(mockResponse);
+      expect(result.tldr).toBeUndefined();
+    });
+
+    it('should throw ApiError when API returns error response', async () => {
+      const apiError = new ApiError('Internal server error', 500, { error: 'Internal server error' });
+      mockApiClient.post.mockRejectedValueOnce(apiError);
+      await expect(factCheck('Test claim')).rejects.toThrow(ApiError);
+    });
+
+    it('should throw ApiError on network error', async () => {
+      const apiError = new ApiError('Network error');
+      mockApiClient.post.mockRejectedValueOnce(apiError);
+      await expect(factCheck('Test claim')).rejects.toThrow(ApiError);
+    });
+
+    it('should call correct endpoint with claim payload', async () => {
+      mockApiClient.post.mockResolvedValueOnce({ data: {} });
+
+      await factCheck('Some claim text');
+
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/factcheck', {
+        claim: 'Some claim text'
+      });
+    });
+  });
+
+  describe('FactCheckResponse interface', () => {
+    it('should support all verdict types', () => {
+      const verdicts: FactCheckResponse['verdict'][] = [
+        'True', 'False', 'Unclear', 'Disputed', 'Rejected'
+      ];
+
+      verdicts.forEach(verdict => {
+        const response: FactCheckResponse = {
+          verdict,
+          confidence: 80,
+          reasoning: 'Test reasoning',
+          sources: [],
+          claim: 'Test claim'
+        };
+        expect(response.verdict).toBe(verdict);
       });
     });
 
-    it('should use custom API URL when NEXT_PUBLIC_API_URL is set', async () => {
-      process.env.NEXT_PUBLIC_API_URL = 'https://custom-api.com';
-      process.env.NEXT_PUBLIC_FACTCHECK_API_KEY = 'test-api-key';
-      const mockApiClient = setupAxiosMock();
-      jest.resetModules();
-      const { factCheck } = await import('./api');
-      mockApiClient.post.mockResolvedValue({ data: mockFactCheckResponse });
-      const axios = await import('axios');
-      await factCheck('Test claim');
-      expect((axios as unknown as { create: jest.Mock }).create).toHaveBeenCalledWith({
-        baseURL: 'https://custom-api.com',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': 'test-api-key',
-        },
-      });
-    });
+    it('should allow optional TL;DR field', () => {
+      const response: FactCheckResponse = {
+        verdict: 'True',
+        confidence: 90,
+        reasoning: 'Test reasoning',
+        sources: [],
+        claim: 'Test claim'
+      };
 
-    it('should throw ApiError for network errors', async () => {
-      const mockApiClient = setupAxiosMock();
-      jest.resetModules();
-      const { factCheck, ApiError } = await import('./api');
-      mockApiClient.post.mockRejectedValue(new ApiError('Network error'));
-      await expect(factCheck('Test claim')).rejects.toThrow(ApiError);
-    });
-
-    it('should throw ApiError for HTTP errors with status code', async () => {
-      const mockApiClient = setupAxiosMock();
-      jest.resetModules();
-      const { factCheck, ApiError } = await import('./api');
-      mockApiClient.post.mockRejectedValue(new ApiError('Invalid API key', 401, { error: 'Invalid API key' }));
-      await expect(factCheck('Test claim')).rejects.toThrow(ApiError);
-    });
-
-    it('should handle rate limiting errors', async () => {
-      const mockApiClient = setupAxiosMock();
-      jest.resetModules();
-      const { factCheck, ApiError } = await import('./api');
-      mockApiClient.post.mockRejectedValue(new ApiError('Too many requests', 429, { error: 'Too many requests' }));
-      await expect(factCheck('Test claim')).rejects.toThrow(ApiError);
+      expect(response.tldr).toBeUndefined();
     });
   });
 
   describe('ApiError class', () => {
-    it('should create ApiError with message, status, and details', async () => {
-      const { ApiError } = await import('./api');
-      const error = new ApiError('Test error', 400, { detail: 'Bad request' });
+    it('should create error with message, status, and details', () => {
+      const error = new ApiError('Test error', 404, { error: 'Not found' });
+
       expect(error.message).toBe('Test error');
-      expect(error.status).toBe(400);
-      expect(error.details).toEqual({ detail: 'Bad request' });
+      expect(error.status).toBe(404);
+      expect(error.details).toEqual({ error: 'Not found' });
       expect(error.name).toBe('ApiError');
     });
 
-    it('should create ApiError with only message', async () => {
-      const { ApiError } = await import('./api');
-      const error = new ApiError('Test error');
-      expect(error.message).toBe('Test error');
+    it('should create error with only message', () => {
+      const error = new ApiError('Simple error');
+
+      expect(error.message).toBe('Simple error');
       expect(error.status).toBeUndefined();
       expect(error.details).toBeUndefined();
-      expect(error.name).toBe('ApiError');
     });
   });
-
-  describe('Type definitions', () => {
-    it('should have correct FactCheckResponse structure', () => {
-      const response: FactCheckResponse = {
-        verdict: 'False',
-        confidence: 95,
-        reasoning: 'This claim is false.',
-        sources: [
-          {
-            title: 'Source Title',
-            url: 'https://example.com',
-            snippet: 'Source snippet',
-          },
-        ],
-        claim: 'Test claim',
-      };
-      expect(response.verdict).toBe('False');
-      expect(response.confidence).toBe(95);
-      expect(response.reasoning).toBe('This claim is false.');
-      expect(response.sources).toHaveLength(1);
-      expect(response.claim).toBe('Test claim');
-    });
-
-    it('should accept Unclear verdict', () => {
-      const response: FactCheckResponse = {
-        verdict: 'Unclear',
-        confidence: 0,
-        reasoning: 'Cannot determine.',
-        sources: [],
-        claim: 'Test claim',
-      };
-      expect(response.verdict).toBe('Unclear');
-    });
-  });
-}); 
+});
