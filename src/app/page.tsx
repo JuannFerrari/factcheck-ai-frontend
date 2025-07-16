@@ -84,16 +84,38 @@ export default function HomePage() {
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header Section */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
             <Brain className="w-8 h-8 text-blue-600" />
           </div>
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 mb-4">
-            FactCheck AI
-          </h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+              FactCheck AI
+            </h1>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+              BETA
+            </span>
+          </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Verify factual claims using AI-powered analysis and real-time web search
           </p>
+        </div>
+
+        {/* Disclaimer */}
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-8">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="w-3 h-3 text-gray-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-gray-600 text-xs leading-relaxed">
+                <strong>Disclaimer:</strong> This is an experimental AI-powered tool for educational and research purposes only.
+                Results are provided &quot;as is&quot; without any warranties. The AI may make errors, miss context,
+                provide incomplete analysis, return unexpected results, or misunderstand sources. Users should independently
+                verify all information through authoritative sources and consult qualified professionals for important decisions.
+                This tool is not intended to replace professional fact-checking, legal advice, medical advice, or other expert consultation.
+                <strong>Do not rely on this tool for medical, legal, financial, or safety-critical decisions. Use at your own risk.</strong>
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Main Content Grid */}
@@ -138,22 +160,6 @@ export default function HomePage() {
                   )}
                 </Button>
               </form>
-
-              {/* Disclaimer */}
-              <div className="mt-4 lg:mt-6 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-amber-900 mb-1 text-xs">Important Disclaimer</h3>
-                    <p className="text-amber-800 text-xs leading-relaxed">
-                      This is an experimental AI-powered tool for educational and research purposes only.
-                      Results are provided &quot;as is&quot; without any warranties. Users should independently verify
-                      all information through authoritative sources and consult qualified professionals for
-                      important decisions. <strong>Use at your own risk.</strong>
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 

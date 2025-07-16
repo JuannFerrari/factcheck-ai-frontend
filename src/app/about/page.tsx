@@ -17,6 +17,24 @@ export default function AboutPage() {
           </p>
         </div>
 
+        {/* Important Disclaimer */}
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-8">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <h3 className="font-semibold text-amber-900 mb-2">Important Disclaimer</h3>
+              <p className="text-amber-800 text-sm leading-relaxed">
+                This tool is for <strong>educational and research purposes only</strong>. Results are provided &quot;as is&quot; without any warranties.
+                The AI may make errors, miss context, provide incomplete analysis, return unexpected results, or misunderstand sources.
+                Users should independently verify all information through authoritative sources and consult qualified professionals
+                for important decisions. This tool is not intended to replace professional fact-checking, legal advice, medical advice,
+                or other expert consultation. <strong>Do not rely on this tool for medical, legal, financial,
+                  or safety-critical decisions. Use at your own risk.</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Main Content Grid */}
         <div className="grid gap-8 md:grid-cols-2">
           {/* Left Column - Project Overview */}
@@ -26,7 +44,7 @@ export default function AboutPage() {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Project Overview</h2>
               <p className="text-gray-700 leading-relaxed">
                 FactCheck AI was created as a learning project to explore AI-powered fact-checking using large language models and real-time web search.
-                The tool combines Hugging Face&apos;s Llama 3.1 8B model with retrieval-augmented generation (RAG), powered by LangChain and web search APIs.
+                The tool combines Hugging Face&apos;s Llama 3.1 8B model with retrieval-augmented generation (RAG), powered by LangChain, web search APIs, and vector database technology.
               </p>
               <div className="mt-4 p-4 bg-blue-50 rounded-md border border-blue-200">
                 <p className="text-sm text-blue-800">
@@ -54,8 +72,8 @@ export default function AboutPage() {
                     <Search className="w-4 h-4 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">Web Search</h3>
-                    <p className="text-sm text-gray-600">Relevant sources are searched using Serper.dev API</p>
+                    <h3 className="font-medium text-gray-900">Hybrid Search</h3>
+                    <p className="text-sm text-gray-600">Combines web search with vector database for similar claims</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -64,7 +82,7 @@ export default function AboutPage() {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">AI Fact-Checking</h3>
-                    <p className="text-sm text-gray-600">The Llama 3.1 8B model analyzes claims against found sources</p>
+                    <p className="text-sm text-gray-600">The Llama 3.1 8B model analyzes claims against sources and detects contradictions</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -73,7 +91,7 @@ export default function AboutPage() {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">Result Generation</h3>
-                    <p className="text-sm text-gray-600">Verdict, confidence score, and reasoning are provided</p>
+                    <p className="text-sm text-gray-600">Verdict, confidence score, reasoning, and results are stored for future reference</p>
                   </div>
                 </div>
               </div>
@@ -91,36 +109,24 @@ export default function AboutPage() {
                   <span className="font-medium text-gray-900">Llama 3.1 8B Instruct</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-gray-700">Framework</span>
-                  <span className="font-medium text-gray-900">Next.js 14</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-gray-700">Styling</span>
-                  <span className="font-medium text-gray-900">Tailwind CSS</span>
+                  <span className="text-gray-700">Frontend</span>
+                  <span className="font-medium text-gray-900">Next.js 14 + Tailwind</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                   <span className="text-gray-700">Backend</span>
-                  <span className="font-medium text-gray-900">FastAPI</span>
+                  <span className="font-medium text-gray-900">FastAPI + LangChain</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-gray-700">Vector Database</span>
+                  <span className="font-medium text-gray-900">Neon PostgreSQL + pgvector</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-gray-700">Embeddings</span>
+                  <span className="font-medium text-gray-900">Sentence Transformers</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-gray-700">Search API</span>
                   <span className="font-medium text-gray-900">Serper.dev</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Important Disclaimer */}
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-amber-900 mb-2">Important Disclaimer</h3>
-                  <p className="text-amber-800 text-sm leading-relaxed">
-                    This tool is for <strong>educational and research purposes only</strong>. Results are provided &quot;as is&quot; without any warranties.
-                    Users should independently verify all information through authoritative sources and consult qualified professionals
-                    for important decisions. This tool is not intended to replace professional fact-checking, legal advice, medical advice,
-                    or other expert consultation. <strong>Use at your own risk.</strong>
-                  </p>
                 </div>
               </div>
             </div>
@@ -135,15 +141,19 @@ export default function AboutPage() {
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  Large language model integration
+                  Vector database integration and semantic search
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  Web API integration and RAG
+                  Hybrid search (web + vector) and contradiction detection
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  Full-stack AI applications
+                  Large language model integration with RAG
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                  Full-stack AI applications with async processing
                 </li>
               </ul>
             </div>
