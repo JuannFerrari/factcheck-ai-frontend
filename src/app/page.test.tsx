@@ -162,7 +162,7 @@ describe('HomePage', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/error/i)).toBeInTheDocument();
+        expect(screen.getByText('An unexpected error occurred. Please try again.')).toBeInTheDocument();
       });
     });
   });
