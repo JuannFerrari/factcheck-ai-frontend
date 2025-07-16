@@ -48,11 +48,11 @@ A modern, responsive web application for AI-powered fact-checking. Built with Ne
    
    Edit `.env.local` with your configuration:
    ```env
-   # Backend API URL
-   NEXT_PUBLIC_API_URL=http://localhost:8000
+   # Backend API URL (optional, defaults to http://localhost:8000)
+   BACKEND_API_URL=http://localhost:8000
    
-   # API Key for authentication
-   NEXT_PUBLIC_FACTCHECK_API_KEY=your_api_key_here
+   # API Key for authentication (server-side only)
+   FACTCHECK_API_KEY=your_api_key_here
    ```
 
 4. **Start the development server**
@@ -116,23 +116,17 @@ npm test -- --coverage
 
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
-| `NEXT_PUBLIC_API_URL` | Backend API URL | `http://localhost:8000` | No |
-| `NEXT_PUBLIC_FACTCHECK_API_KEY` | API key for authentication | - | Yes |
+| `BACKEND_API_URL` | Backend API URL | `http://localhost:8000` | No |
+| `FACTCHECK_API_KEY` | API key for authentication (server-side only) | - | Yes |
 
 ### API Integration
 
-The frontend communicates with the FactCheck AI Backend via REST API:
+The frontend communicates with the FactCheck AI Backend via a secure proxy:
 
-- **Endpoint**: `POST /api/v1/factcheck`
-- **Authentication**: API key in `X-API-Key` header
+- **Frontend Endpoint**: `POST /api/factcheck` (Next.js API route)
+- **Backend Endpoint**: `POST /api/v1/factcheck`
+- **Authentication**: API key handled server-side only
 - **Rate Limiting**: 10 requests/minute, 2 requests/second
-
-## 🔒 Security
-
-- API key authentication for all backend requests
-- Input validation and sanitization
-- Error handling without exposing sensitive information
-- HTTPS enforcement in production
 
 ## 🤝 Contributing
 

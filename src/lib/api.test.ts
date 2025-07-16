@@ -42,7 +42,7 @@ describe('API Module', () => {
       const result = await factCheck('Test claim');
 
       expect(result).toEqual(mockResponse);
-      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/factcheck', {
+      expect(mockApiClient.post).toHaveBeenCalledWith('/factcheck', {
         claim: 'Test claim'
       });
     });
@@ -81,7 +81,7 @@ describe('API Module', () => {
 
       await factCheck('Some claim text');
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/factcheck', {
+      expect(mockApiClient.post).toHaveBeenCalledWith('/factcheck', {
         claim: 'Some claim text'
       });
     });

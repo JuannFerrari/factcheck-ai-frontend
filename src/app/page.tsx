@@ -40,6 +40,7 @@ export default function HomePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
 
     if (!claim.trim()) {
       setError(getValidationError('Please enter a claim to check'));
@@ -51,6 +52,7 @@ export default function HomePage() {
 
     try {
       const response = await factCheck(claim);
+
       const newResult: ResultProps = {
         verdict: response.verdict,
         confidence: response.confidence,
@@ -59,6 +61,7 @@ export default function HomePage() {
         sources: response.sources,
         claim: response.claim,
       };
+
       setResults(prev => [newResult, ...prev]);
       setClaim(''); // Clear the input after successful check
       setVisibleCount(PAGE_SIZE); // Reset visible count to show latest
@@ -125,7 +128,7 @@ export default function HomePage() {
             <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-6 shadow-sm lg:sticky lg:top-8">
               <h2 className="text-lg lg:text-xl font-semibold text-gray-900 mb-4">Check a Claim</h2>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form className="space-y-4" noValidate onSubmit={handleSubmit}>
                 <div>
                   <label htmlFor="claim" className="block text-sm font-medium text-gray-700 mb-2">
                     Enter your claim

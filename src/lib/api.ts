@@ -2,14 +2,14 @@ import axios from 'axios';
 
 // API service for communicating with the backend
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Use the local Next.js API route instead of calling backend directly
+const API_BASE_URL = '/api';
 
 // Create a centralized API client with default configuration
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    'X-API-Key': process.env.NEXT_PUBLIC_FACTCHECK_API_KEY,
   },
 });
 
@@ -64,9 +64,10 @@ export class ApiError extends Error {
 
 export async function factCheck(claim: string): Promise<FactCheckResponse> {
   try {
-    const response = await apiClient.post('/api/v1/factcheck', {
+    const response = await apiClient.post('/factcheck', {
       claim
     });
+
     return response.data;
   } catch (error: unknown) {
     // Error is already handled by the interceptor, but we need to re-throw it
