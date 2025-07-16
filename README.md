@@ -1,5 +1,9 @@
 # FactCheck AI Frontend
 
+[![CI Pipeline](https://github.com/JuannFerrari/factcheck-ai-frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/JuannFerrari/factcheck-ai-frontend/actions/workflows/ci.yml)
+
+**Backend Repository**: [factcheck-ai-backend](https://github.com/JuannFerrari/factcheck-ai-backend)
+
 A modern, responsive web application for AI-powered fact-checking. Built with Next.js 15, TypeScript, and Tailwind CSS, this frontend provides an intuitive interface for users to submit claims and receive AI-analyzed fact-checking results with confidence scores and source citations.
 
 ## 🚀 Features
