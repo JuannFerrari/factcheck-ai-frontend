@@ -128,6 +128,12 @@ export default function AboutPage() {
                   <span className="text-gray-700">Search API</span>
                   <span className="font-medium text-gray-900">Serper.dev</span>
                 </div>
+
+                <div className="pt-2 text-xs text-gray-500 text-right">
+                  <span>
+                    <em>Note: Vector search is disabled in this demo due to memory constraints.</em>
+                  </span>
+                </div>
               </div>
             </div>
 
